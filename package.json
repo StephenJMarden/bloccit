@@ -1,0 +1,19 @@
+{
+  "name": "bloccit",
+  "version": "1.0.0",
+  "description": "A small reddit clone built in NERD stack",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "set NODE_ENV=test && jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StephenJMarden/bloccit.git"
+  },
+  "author": "Stephen Marden",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/StephenJMarden/bloccit/issues"
+  },
+  "homepage": "https://github.com/StephenJMarden/bloccit#readme"
+}
