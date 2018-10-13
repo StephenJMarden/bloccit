@@ -4,6 +4,7 @@
   "description": "A small reddit clone built in NERD stack",
   "main": "src/server.js",
   "scripts": {
+    "start": "node src/server.js",
     "test": "set NODE_ENV=test && jasmine"
   },
   "repository": {
@@ -15,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/StephenJMarden/bloccit/issues"
   },
-  "homepage": "https://github.com/StephenJMarden/bloccit#readme"
+  "homepage": "https://github.com/StephenJMarden/bloccit#readme",
+  "devDependencies": {
+    "jasmine": "^3.2.0",
+    "request": "^2.88.0"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
