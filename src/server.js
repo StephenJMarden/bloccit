@@ -9,7 +9,6 @@ server.listen(port);
 
 server.on('listening', () => {
     console.log(`Server is listening on port ${server.address().port}`);
-    console.log(process.env.PORT);
 });
 
 function normalizePort(val) {
