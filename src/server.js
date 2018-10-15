@@ -1,6 +1,6 @@
 const   app = require('./app'),
         http = require('http'),
-        port = process.env.PORT || 3000;
+        port = process.env.PORT || 4000;
 
 console.log(port);
 app.set('port', port);
