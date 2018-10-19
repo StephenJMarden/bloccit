@@ -20,7 +20,7 @@ module.exports = {
         })
         .catch((err) => {
             callback(err);
-        })
+        });
     },
     getTopic(id, callback) {
         return Topic.findById(id)
