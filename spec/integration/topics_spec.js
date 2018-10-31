@@ -142,7 +142,7 @@ describe("routes : topics", () => {
                 .then((topic) => {
                     expect(topic.title).toBe("Javascript Frameworks");
                     done();
-                })
+                });
             });
         });
 
