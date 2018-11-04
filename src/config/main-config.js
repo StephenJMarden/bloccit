@@ -4,7 +4,8 @@ const   path = require('path'),
         bodyParser = require('body-parser'),
         expressValidator = require('express-validator'),
         session = require('express-session'),
-        flash = require('express-flash');
+        flash = require('express-flash'),
+        passportConfig = require('./passport-config');
 
 module.exports = {
     init(app, express) {
@@ -16,9 +17,16 @@ module.exports = {
             secret: process.env.cookieSecret,
             resave: false,
             saveUninitialized: false,
-            cookie: { maxAge: 60000 }
+            cookie: { maxAge: 1.21e+9 }
         }));
         app.use(flash());
+        passportConfig.init(app);
+
+        app.use((req, res, next) => {
+            res.locals.currentUser = req.user;
+            next();
+        })
+
         app.use(express.static(path.join(__dirname, '..', 'assets')));
     }
 }
