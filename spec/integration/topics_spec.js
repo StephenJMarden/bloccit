@@ -75,6 +75,28 @@ describe("routes : topics", () => {
                 });
             });
         });
+
+        it("should not be allowed to create a topic that does not pass validations", (done) => {
+            const badOptions = {
+                url: `${base}create`,
+                form: {
+                    title: 'a',
+                    description: 'b'
+                }
+            };
+
+            request.post(badOptions, (err, res, body) => {
+                Topic.findOne({where: {title: 'a'}})
+                .then((topic) => {
+                    expect(topic).toBeNull();
+                    done();
+                })
+                .catch((err) => {
+                    console.log(err);
+                    done();
+                });
+            });
+        });
     });
 
     describe("SHOW /topics/:id", () => {
