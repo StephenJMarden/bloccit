@@ -5,7 +5,7 @@ module.exports = class ApplicationPolicy {
     }
 
     _isOwner() {
-        return this.record && (this.record.userId == this.user.id);
+        return this.record && this.user && (this.record.userId == this.user.id);
     }
 
     _isAdmin() {
@@ -13,7 +13,7 @@ module.exports = class ApplicationPolicy {
     }
 
     new() {
-        return this.user !== null;
+        return this.user !== null && this.user !== undefined;
     }
 
     create() {
