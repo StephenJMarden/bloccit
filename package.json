@@ -4,7 +4,7 @@
   "description": "A small reddit clone built in NERD stack",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "set NODE_ENV=development && node src/server.js",
     "test": "set NODE_ENV=test && jasmine"
   },
   "repository": {

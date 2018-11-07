@@ -1,8 +1,47 @@
 const   sequelize = require('../../src/db/models/index').sequelize,
         Topic = require('../../src/db/models').Topic,
-        Post = require('../../src/db/models').Post;
+        Post = require('../../src/db/models').Post,
+        User = require('../../src/db/models').User;
 
 describe("topic", () => {
+
+    beforeEach((done) => {
+        this.topic;
+        this.post;
+        this.user;
+
+        sequelize.sync({force: true}).then((res) => {
+
+            User.create({
+                email: "starman@tesla.com",
+                password: "Trekkie4lyfe"
+            })
+            .then((user) => {
+                this.user = user;
+
+                Topic.create({
+                    title: "Expedition to Alpha Centauri",
+                    description: "A compilation of reports from recent visits to the star system.",
+                    posts: [{
+                        title: "My first visit to Proxima Centauri b",
+                        body: "I saw some rocks.",
+                        userId: this.user.id
+                    }]
+                }, {
+                    include: {
+                        model: Post,
+                        as: "posts"
+                    }
+                })
+                .then((topic) => {
+                    this.topic = topic;
+                    this.post = topic.posts[0];
+                    done();
+                });
+            });
+
+        });
+    });
 
     describe("#create()", () => {
 
@@ -49,13 +88,15 @@ describe("topic", () => {
                 Post.create({
                     title: "Dark Matter",
                     body: "The universe is largely made up of a substance or substances known only to scientists as 'dark matter'",
-                    topicId: topic.id
+                    topicId: topic.id,
+                    userId: this.user.id
                 })
                 .then(() => {
                     Post.create({
                         title: "The Sun",
                         body: "Approximately 1,300,000 Earths can fit inside the sun",
-                        topicId: topic.id
+                        topicId: topic.id,
+                        userId: this.user.id
                     })
                     .then(() => {
                         topic.getPosts()

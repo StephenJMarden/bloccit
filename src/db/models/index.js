@@ -4,8 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
-const config = require(__dirname + '/../config/config.json')["test"];
+const env = process.env.NODE_ENV.trim() || 'development';   //process.env.NODE_ENV was adding whitespace to the end of the string, causes config to be undefined
+const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 
 let sequelize;
