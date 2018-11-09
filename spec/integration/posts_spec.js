@@ -12,6 +12,8 @@ describe("route: posts", () => {
         this.topic;
         this.post;
         this.user;
+        this.memberUser;
+        this.memberPost;
 
         sequelize.sync({force: true}).then((res) => {
 
@@ -23,24 +25,42 @@ describe("route: posts", () => {
             .then((user) => {
                 this.user = user;
 
-                Topic.create({
-                    title: "Winter Games",
-                    description: "Post your Winter Games stories",
-                    posts: [{
-                        title: "Snowball Fighting",
-                        body: "So much snow!",
-                        userId: this.user.id
-                    }]
-                }, {
-                    include: {
-                        model: Post,
-                        as: "posts"
-                    }
+                User.create({
+                    email: "testuser@example.com",
+                    password: "password",
+                    role: "member"
                 })
-                .then((topic) => {
-                    this.topic = topic;
-                    this.post = topic.posts[0];
-                    done();
+                .then((memberUser) => {
+                    this.memberUser = memberUser;
+
+                    Topic.create({
+                        title: "Winter Games",
+                        description: "Post your Winter Games stories",
+                        posts: [{
+                            title: "Snowball Fighting",
+                            body: "So much snow!",
+                            userId: this.user.id
+                        },{
+                            title: "Snowboarding",
+                            body: "It's my favorite winter sport.",
+                            userId: this.memberUser.id
+                        }]
+                    }, {
+                        include: {
+                            model: Post,
+                            as: "posts"
+                        }
+                    })
+                    .then((topic) => {
+                        this.topic = topic;
+                        this.post = topic.posts[0];
+                        this.memberPost = topic.posts[1];
+                        done();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        done();
+                    });
                 });
             });
 
@@ -177,7 +197,9 @@ describe("route: posts", () => {
             request.get({
                 url: "http://localhost:3000/auth/fake",
                 form: {
-                    role: "member"
+                    role: this.memberUser.role,
+                    userId: this.memberUser.id,
+                    email: this.memberUser.email
                 }
             }, (err, res, body) => {
                 done();
@@ -262,9 +284,8 @@ describe("route: posts", () => {
         describe("POST /topics/:topicId/posts/:id/destroy", () => {
 
             it("should delete the post with the associated id", (done) => {
-                expect(this.post.id).toBe(1);
-                request.post(`${base}/${this.topic.id}/posts/${this.post.id}/destroy`, (err, res, body) => {
-                    Post.findById(1)
+                request.post(`${base}/${this.topic.id}/posts/${this.memberPost.id}/destroy`, (err, res, body) => {
+                    Post.findById(this.memberPost.id)
                     .then((post) => {
                         expect(err).toBeNull();
                         expect(post).toBeNull();
@@ -278,10 +299,10 @@ describe("route: posts", () => {
         describe("GET /topics/:topicId/posts/:id/edit", () => {
 
             it("should render a view with an edit post form", (done) => {
-                request.get(`${base}/${this.topic.id}/posts/${this.post.id}/edit`, (err, res, body) => {
+                request.get(`${base}/${this.topic.id}/posts/${this.memberPost.id}/edit`, (err, res, body) => {
                     expect(err).toBeNull();
                     expect(body).toContain("Edit Post");
-                    expect(body).toContain("Snowball Fighting");
+                    expect(body).toContain("Snowboarding");
                     done();
                 });
             });
@@ -292,7 +313,7 @@ describe("route: posts", () => {
 
             it("should return the status code 302", (done) => {
                 request.post({
-                    url: `${base}/${this.topic.id}/posts/${this.post.id}/update`,
+                    url: `${base}/${this.topic.id}/posts/${this.memberPost.id}/update`,
                     form: {
                         title: "Snowman Building Competition",
                         body: "I love watching the snow melt slowly."
@@ -305,7 +326,7 @@ describe("route: posts", () => {
 
             it("should update the post with the given values", (done) => {
                 const options = {
-                    url: `${base}/${this.topic.id}/posts/${this.post.id}/update`,
+                    url: `${base}/${this.topic.id}/posts/${this.memberPost.id}/update`,
                     form: {
                         title: "Snowman Building Competition",
                         body: "An ice cold competition."
@@ -315,7 +336,7 @@ describe("route: posts", () => {
                 request.post(options, (err, res, body) => {
                     expect(err).toBeNull();
                     Post.findOne({
-                        where: {id: this.post.id}
+                        where: {id: this.memberPost.id}
                     })
                     .then((post) => {
                         expect(post.title).toBe("Snowman Building Competition");
