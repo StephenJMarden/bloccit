@@ -2,7 +2,8 @@ const   Post = require('./models').Post,
         Topic = require('./models').Topic,
         Authorizer = require('../../src/policies/post'),
         Comment = require("./models").Comment,
-        User = require("./models").User;
+        User = require("./models").User,
+        Vote = require("./models").Vote;
 
 module.exports = {
     addPost(newPost, callback) {
@@ -19,7 +20,7 @@ module.exports = {
             include: [
                 {model: Comment, as: "comments", include: [
                     {model: User }
-                ]}
+                ]}, {model: Vote, as: "votes"}
             ]
         })
         .then((post) => {
