@@ -41,31 +41,57 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  Post.prototype.getPoints = function(){
+  Post.prototype.getPoints = function(callback){
+       if(this.votes === undefined) {
+           return this.getVotes({
+               where: {
+                   postId: this.id
+               }
+           })
+           .then((votes) => {
+               callback(votes.map((v) => {return v.value}).reduce((prev, next) => {return prev + next}));
+           });
+       } else {
+           if(this.votes.length === 0) return 0;
 
-     if(this.votes === undefined || this.votes.length === 0) return 0;
-
-     return this.votes
-       .map((v) => { return v.value })
-       .reduce((prev, next) => { return prev + next });
+           return this.votes
+             .map((v) => { return v.value })
+             .reduce((prev, next) => { return prev + next });
+       }
    };
 
-   Post.prototype.hasUpvoteFor = function(providedUserId) {
-       if(this.votes === undefined) return false;
-
-       for(let i = 0; i < this.votes.length; i++) {
-           if(this.votes[i].value === 1 && this.votes[i].userId === providedUserId) return true;
-       }
-
-       return false;
+   Post.prototype.hasUpvoteFor = function(providedUserId, callback) {
+       return this.getVotes({
+           where: {
+               userId: providedUserId,
+               postId: this.id,
+               value: 1
+           }
+       })
+       .then((votes) => {
+           if(votes) {
+               callback(true);
+           } else {
+               callback(false);
+           }
+       })
    }
 
-   Post.prototype.hasDownvoteFor = function(providedUserId) {
-       if(this.votes === undefined) return false;
-
-       for(let i = 0; i < this.votes.length; i++) {
-           if(this.votes[i].value === -1 && this.votes[i].userId === providedUserId) return true;
-       }
+   Post.prototype.hasDownvoteFor = function(providedUserId, callback) {
+       return this.getVotes({
+           where: {
+               userId: providedUserId,
+               postId: this.id,
+               value: -1
+           }
+       })
+       .then((vote) => {
+           if(vote) {
+               callback(true);
+           } else {
+               callback(false);
+           }
+       })
    }
 
   return Post;

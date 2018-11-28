@@ -25,30 +25,28 @@ describe("post", () => {
                     posts: [{
                         title: "My first visit to Alpha Centauri",
                         body: "A compilation of reports from recent visits to the star system.",
-                        userId: this.user.id,
-                        votes: [
+                        userId: this.user.id
+                        /*votes: [
                             {
                                 value: 1,
                                 userId: this.user.id
                             }
-                        ]
+                        ]*/
                     }]
                 }, {
                     include: {
                         model: Post,
                         as: "posts"
                     }
-                }, {
+                }/*, {
                     include: {
                         model: Vote,
                         as: "votes"
                     }
-                })
+                }*/)
                 .then((topic) => {
                     this.topic = topic;
                     this.post = topic.posts[0];
-                    console.log(this.post);
-                    console.log(this.post.votes);
                     done();
                 });
             });
@@ -169,9 +167,18 @@ describe("post", () => {
 
         it("should return the points of the post", (done) => {
 
-            let votes = this.post.getPoints();
-            expect(votes).not.toBeNull();
-            done();
+            Vote.create({
+                value: 1,
+                postId: this.post.id,
+                userId: this.user.id
+            })
+            .then((vote) => {
+                this.post.getPoints((res) => {
+                    expect(res).not.toBeNull();
+                    expect(res).toBe(1);
+                    done();
+                });
+            });
 
         });
 
@@ -180,8 +187,18 @@ describe("post", () => {
     describe("#hasUpvoteFor()", () => {
 
         it("should return true if the user has upvoted the post", (done) => {
-            expect(this.post.hasUpvoteFor(this.user)).toBe(true);
-            done();
+
+            Vote.create({
+                value: 1,
+                postId: this.post.id,
+                userId: this.user.id
+            })
+            .then((vote) => {
+                this.post.hasUpvoteFor(this.user.id, (res) => {
+                    expect(res).toBe(true);
+                    done();
+                });
+            })
         });
 
     });
@@ -189,8 +206,17 @@ describe("post", () => {
     describe("#hasDownvoteFor()", () => {
 
         it("should return true if the user has downvoted the post", (done) => {
-            expect(this.post.hasDownvoteFor(this.user)).toBe(true);
-            done();
+            Vote.create({
+                value: 1,
+                postId: this.post.id,
+                userId: this.user.id
+            })
+            .then((vote) => {
+                this.post.hasDownvoteFor(this.user.id, (res) => {
+                    expect(res).toBe(true);
+                    done();
+                });
+            });
         });
 
     });

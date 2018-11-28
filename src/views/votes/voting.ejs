@@ -2,7 +2,7 @@
   <div>
     <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/votes/upvote">&#9650;</a>
   </div>
-    <b><%= post.getPoints() %></b>
+    <b><%= post.getPoints(null) %></b>
   <div>
     <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/votes/downvote">&#9660;</a>
   </div>
