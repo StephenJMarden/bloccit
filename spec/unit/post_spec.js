@@ -1,7 +1,8 @@
 const   sequelize = require('../../src/db/models/index').sequelize,
         Topic = require('../../src/db/models').Topic,
         Post = require('../../src/db/models').Post,
-        User = require('../../src/db/models').User;
+        User = require('../../src/db/models').User,
+        Vote = require('../../src/db/models').Vote;
 
 describe("post", () => {
     beforeEach((done) => {
@@ -24,17 +25,30 @@ describe("post", () => {
                     posts: [{
                         title: "My first visit to Alpha Centauri",
                         body: "A compilation of reports from recent visits to the star system.",
-                        userId: this.user.id
+                        userId: this.user.id,
+                        votes: [
+                            {
+                                value: 1,
+                                userId: this.user.id
+                            }
+                        ]
                     }]
                 }, {
                     include: {
                         model: Post,
                         as: "posts"
                     }
+                }, {
+                    include: {
+                        model: Vote,
+                        as: "votes"
+                    }
                 })
                 .then((topic) => {
                     this.topic = topic;
                     this.post = topic.posts[0];
+                    console.log(this.post);
+                    console.log(this.post.votes);
                     done();
                 });
             });
@@ -147,6 +161,36 @@ describe("post", () => {
                 done();
             });
 
+        });
+
+    });
+
+    describe("#getPoints()", () => {
+
+        it("should return the points of the post", (done) => {
+
+            let votes = this.post.getPoints();
+            expect(votes).not.toBeNull();
+            done();
+
+        });
+
+    });
+
+    describe("#hasUpvoteFor()", () => {
+
+        it("should return true if the user has upvoted the post", (done) => {
+            expect(this.post.hasUpvoteFor(this.user)).toBe(true);
+            done();
+        });
+
+    });
+
+    describe("#hasDownvoteFor()", () => {
+
+        it("should return true if the user has downvoted the post", (done) => {
+            expect(this.post.hasDownvoteFor(this.user)).toBe(true);
+            done();
         });
 
     });

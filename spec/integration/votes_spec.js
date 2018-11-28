@@ -137,14 +137,48 @@ describe("routes : votes", () => {
                expect(vote.userId).toBe(this.user.id);
                expect(vote.postId).toBe(this.post.id);
                done();
-             })
-             .catch((err) => {
-               console.log(err);
-               done();
              });
            }
          );
        });
+
+       it("should not allow creation of a second upvote", (done) => {
+           const options = {
+             url: `${base}${this.topic.id}/posts/${this.post.id}/votes/upvote`
+           };
+           request.get(options, (err, res, body) => {
+               Vote.findOne({
+                 where: {
+                   userId: this.user.id,
+                   postId: this.post.id
+                 }
+               })
+               .then((vote) => {
+                   expect(vote).not.toBeNull();
+                   expect(vote.value).toBe(1);
+                   expect(vote.userId).toBe(this.user.id);
+                   expect(vote.postId).toBe(this.post.id);
+
+                   request.get(options, (err, res, body) => {
+                       Vote.findOne({
+                         where: {
+                           userId: this.user.id,
+                           postId: this.post.id
+                         }
+                       })
+                       .then((vote) => {
+                           // upvoting the same post twice from the same account should still leave the vote as 1
+                           expect(vote).not.toBeNull();
+                           expect(vote.value).toBe(1);
+                           expect(vote.userId).toBe(this.user.id);
+                           expect(vote.postId).toBe(this.post.id);
+                           done();
+                       });
+                   });
+               });
+           });
+       });
+
      });
 
      describe("GET /topics/:topicId/posts/:postId/votes/downvote", () => {
@@ -167,14 +201,48 @@ describe("routes : votes", () => {
                expect(vote.userId).toBe(this.user.id);
                expect(vote.postId).toBe(this.post.id);
                done();
-             })
-             .catch((err) => {
-               console.log(err);
-               done();
              });
            }
          );
        });
+
+       it("should not allow creation of a second downvote", (done) => {
+           const options = {
+             url: `${base}${this.topic.id}/posts/${this.post.id}/votes/downvote`
+           };
+           request.get(options, (err, res, body) => {
+               Vote.findOne({
+                 where: {
+                   userId: this.user.id,
+                   postId: this.post.id
+                 }
+               })
+               .then((vote) => {
+                   expect(vote).not.toBeNull();
+                   expect(vote.value).toBe(-1);
+                   expect(vote.userId).toBe(this.user.id);
+                   expect(vote.postId).toBe(this.post.id);
+
+                   request.get(options, (err, res, body) => {
+                       Vote.findOne({
+                         where: {
+                           userId: this.user.id,
+                           postId: this.post.id
+                         }
+                       })
+                       .then((vote) => {
+                           // downvoting the same post twice from the same account should still leave the vote as -1
+                           expect(vote).not.toBeNull();
+                           expect(vote.value).toBe(-1);
+                           expect(vote.userId).toBe(this.user.id);
+                           expect(vote.postId).toBe(this.post.id);
+                           done();
+                       });
+                   });
+               });
+           });
+       });
+
      });
 
    }); //end context for signed in user
