@@ -5,6 +5,7 @@ const   request = require('request'),
         Topic = require("../../src/db/models").Topic,
         Post = require("../../src/db/models").Post,
         Comment = require("../../src/db/models").Comment,
+        Favorite = require('../../src/db/models').Favorite,
         sequelize = require('../../src/db/models/index').sequelize;
 
 describe("routes : users", () => {
@@ -102,6 +103,7 @@ describe("routes : users", () => {
        this.user;
        this.post;
        this.comment;
+       this.favorite;
 
        User.create({
          email: "starman@tesla.com",
@@ -134,19 +136,27 @@ describe("routes : users", () => {
            })
            .then((res) => {
              this.comment = res;
-             done();
+             Favorite.create({
+                 postId: this.post.id,
+                 userId: this.user.id
+             })
+             .then((res) => {
+                 this.favorite = res;
+                 done();
+             })
            })
          })
        })
 
      });
 
-     it("should present a list of comments and posts a user has created", (done) => {
+     it("should present a list of comments, posts, and favorites a user has created", (done) => {
 
        request.get(`${base}/${this.user.id}`, (err, res, body) => {
 
          expect(body).toContain("Snowball Fighting");
          expect(body).toContain("This comment is alright.")
+         expect(body).toContain("Favorite Posts");
          done();
        });
 
