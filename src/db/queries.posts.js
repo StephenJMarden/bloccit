@@ -3,7 +3,8 @@ const   Post = require('./models').Post,
         Authorizer = require('../../src/policies/post'),
         Comment = require("./models").Comment,
         User = require("./models").User,
-        Vote = require("./models").Vote;
+        Vote = require("./models").Vote,
+        Favorite = require('./models').Favorite;
 
 module.exports = {
     addPost(newPost, callback) {
@@ -20,7 +21,8 @@ module.exports = {
             include: [
                 {model: Comment, as: "comments", include: [
                     {model: User }
-                ]}, {model: Vote, as: "votes"}
+                ]}, {model: Vote, as: "votes"},
+                    {model: Favorite, as: "favorites"}
             ]
         })
         .then((post) => {

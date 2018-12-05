@@ -5,7 +5,8 @@ const   staticRoutes = require('../routes/static'),
         flairRoutes = require('../routes/flairs'),
         userRoutes = require('../routes/users'),
         commentRoutes = require('../routes/comments'),
-        voteRoutes = require('../routes/votes');
+        voteRoutes = require('../routes/votes'),
+        favoriteRoutes = require('../routes/favorites');
 
 module.exports = {
     init(app) {
@@ -22,5 +23,6 @@ module.exports = {
         app.use(userRoutes);
         app.use(commentRoutes);
         app.use(voteRoutes);
+        app.use(favoriteRoutes);
     }
 }
