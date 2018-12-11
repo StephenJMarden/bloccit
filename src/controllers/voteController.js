@@ -1,4 +1,4 @@
-const voteQueries = require("../db/queries.votes.js");
+const   voteQueries = require("../db/queries.votes.js");
 
 module.exports = {
   upvote(req, res, next){

@@ -175,7 +175,7 @@ describe("post", () => {
             .then((vote) => {
                 this.post.getPoints((res) => {
                     expect(res).not.toBeNull();
-                    expect(res).toBe(1);
+                    expect(res).toBe(2);    //should be two due to autmatic upvoting on post creation
                     done();
                 });
             });

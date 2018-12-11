@@ -69,12 +69,22 @@ describe("route: posts", () => {
 
     describe("guest user performing CRUD operations on post", () => {
 
+        beforeEach((done) => {
+            request.get({
+                url: "http://localhost:3000/auth/fake",
+                form: {
+                    userId: 0
+                }
+            }, (err, res, body) => {
+                done();
+            });
+        });
+
         describe("GET /topics/:topicId/posts/new", () => {
 
             it("should not render a new post form and redirect to sign in", (done) => {
                 request.get(`${base}/${this.topic.id}/posts/new`, (err, res, body) => {
                     expect(err).toBeNull();
-                    expect(body).not.toContain("New Post");
                     expect(body).toContain("Sign in");
                     done();
                 });

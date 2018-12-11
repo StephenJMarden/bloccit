@@ -79,14 +79,13 @@ describe("routes : votes", () => {
           };
           request.get(options,
             (err, res, body) => {
-              Vote.findOne({            // look for the vote, should not find one.
+              Vote.findAll({            // look for the vote, should not find one.
                 where: {
-                  userId: this.user.id,
                   postId: this.post.id
                 }
               })
-              .then((vote) => {
-                expect(vote).toBeNull();
+              .then((votes) => {
+                expect(votes.length).toBe(1);   //should be one due to automatic voting on posts, but not two because this guest vote should not be authorized
                 done();
               })
               .catch((err) => {
